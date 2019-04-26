@@ -1,24 +1,22 @@
-package com.ming.concurrency;
+package com.ming.concurrency.example.threadlocal;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
- * @Description : 测试接口
+ * @Description :
  * @Author : zhangMing
- * @Date : Created in 9:05 PM 2019/4/23
+ * @Date : Created in 8:44 PM 2019/4/25
  */
 @Controller
-@Slf4j
-public class TestController {
+@RequestMapping("/threadLocal")
+public class ThreadLoaclController {
 
     @RequestMapping("/test")
     @ResponseBody
-    public String test(){
-
-        return "test";
+    public Long test(){
+        return RequestHolder.getId();
     }
 
 }
