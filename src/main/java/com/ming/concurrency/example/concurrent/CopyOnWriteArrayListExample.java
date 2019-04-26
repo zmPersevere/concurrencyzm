@@ -1,33 +1,29 @@
-package com.ming.concurrency.example.commonunsafe;
+package com.ming.concurrency.example.concurrent;
 
 import com.ming.concurrency.annoations.NotThreadSafe;
+import com.ming.concurrency.annoations.ThreadSafe;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Semaphore;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.*;
 
 /**
  * @Description :
  * @Author : zhangMing
- * @Date : Created in 9:28 PM 2019/4/25
+ * @Date : Created in 9:25 PM 2019/4/25
  */
 @Slf4j
-@NotThreadSafe
-public class HashMapExample {
+@ThreadSafe
+public class CopyOnWriteArrayListExample {
 
     //请求总数
-    public static int clientTotal = 5000;
+    public static int clientTotal = 50000;
 
     //同时并发执行的线程数
     public static int threadTotal = 200;
 
-    private static Map<Integer,Integer> map = new HashMap<>(7000);
+    private static List<Long> list = new CopyOnWriteArrayList<>();
 
     public static void main(String[] args)throws Exception {
         ExecutorService executorService = Executors.newCachedThreadPool();
@@ -35,11 +31,10 @@ public class HashMapExample {
         final CountDownLatch countDownLatch = new CountDownLatch(clientTotal);
         System.out.println(countDownLatch);
         for (int i = 0 ; i < clientTotal ; i ++){
-            final int count = i;
             executorService.execute(() -> {
                 try {
                     semaphore.acquire();
-                    update(count);
+                    update(countDownLatch.getCount());
                     semaphore.release();
                 }catch (Exception e){
                     log.error("excepiton",e);
@@ -50,14 +45,15 @@ public class HashMapExample {
         System.out.println(countDownLatch);
         countDownLatch.await();
         executorService.shutdown();
-        log.info("size:{}",map.size());
+        log.info("size:{}",list.size());
     }
 
 
     /**
      * 每次执行时在尾部添加字符1
      */
-    private static void update(int i){
-        map.put(i,i);
+    private static void update(Long i){
+        list.add(i);
     }
+
 }
